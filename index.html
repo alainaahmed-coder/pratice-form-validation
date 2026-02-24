@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayna Registration - Live Validation</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        body { 
+            background: linear-gradient(135deg, #a91515, #c62a78, #aae61d);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            font-family: 'Segoe UI', sans-serif; margin: 0;
+        }
+        .form-card { 
+            width: 100%; max-width: 420px; background: #fff; 
+            padding: 35px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+        .form-control { border-radius: 10px; padding: 12px; border: 2px solid #ddd; }
+        .form-control:focus { box-shadow: none; border-color: #2c5364; }
+        
+        
+        .err-txt { color: #dc3545; font-size: 0.8rem; margin-top: 4px; display: none; font-weight: 500; }
+        .is-invalid { border-color: #dc3545 !important; }
+
+        .pass-container { position: relative; }
+        .eye-icon { position: absolute; right: 15px; top: 13px; cursor: pointer; color: #888; z-index: 5; }
+        
+        .btn-submit { 
+            padding: 13px; border-radius: 10px; font-weight: 700; margin-top: 10px;
+            border: none; color: white; background: #2c5364; width: 100%; transition: 0.3s;
+        }
+        .btn-submit:disabled { background: #ccc !important; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<div class="form-card">
+    <h2 class="text-center mb-4" style="color: #2c5364;">Register</h2>
+    <form id="aynaForm" novalidate>
+        
+        <div class="mb-3">
+            <input type="text" class="form-control check-in" id="fName" placeholder="First Name">
+            <div class="err-txt" id="fNameErr">Enter 6 alphabets</div>
+        </div>
+
+        <div class="mb-3">
+            <input type="text" class="form-control check-in" id="fullName" placeholder="Full Name">
+            <div class="err-txt" id="fullNameErr">Enter 10 alphabets</div>
+        </div>
+
+        <div class="mb-3">
+            <input type="email" class="form-control check-in" id="email" placeholder="ayna@gmail.com">
+            <div class="err-txt" id="emailErr">Please enter a valid email.</div>
+        </div>
+
+        <div class="mb-3 pass-container">
+            <input type="password" class="form-control check-in" id="pass" placeholder="Password">
+            <i class="bi bi-eye eye-icon" onclick="toggleView('pass', this)"></i>
+            <div class="err-txt" id="passErr">Password must be at least 6 characters.</div>
+        </div>
+
+        <div class="mb-4 pass-container">
+            <input type="password" class="form-control check-in" id="cPass" placeholder="Confirm Password">
+            <i class="bi bi-eye eye-icon" onclick="toggleView('cPass', this)"></i>
+            <div class="err-txt" id="cPassErr">Passwords do not match.</div>
+        </div>
+
+        <button type="submit" id="subBtn" class="btn-submit" disabled>SUBMIT</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+    const form = document.getElementById('aynaForm');
+    const btn = document.getElementById('subBtn');
+    const inputs = document.querySelectorAll('.check-in');
+
+    
+    const fName = document.getElementById('fName');
+    const fullName = document.getElementById('fullName');
+    const email = document.getElementById('email');
+    const pass = document.getElementById('pass');
+    const cPass = document.getElementById('cPass');
+
+
+    function validateLive() {
+        let allValid = true;
+
+        
+        if (fName.value.length > 0 && fName.value.length < 6) {
+            showErr('fName', 'fNameErr'); allValid = false;
+        } else { hideErr('fName', 'fNameErr'); if(fName.value === "") allValid = false; }
+
+        
+        if (fullName.value.length > 0 && fullName.value.length < 10) {
+            showErr('fullName', 'fullNameErr'); allValid = false;
+        } else { hideErr('fullName', 'fullNameErr'); if(fullName.value === "") allValid = false; }
+
+        
+        if (email.value.length > 0 && (!email.value.includes('@') || !email.value.includes('.'))) {
+            showErr('email', 'emailErr'); allValid = false;
+        } else { hideErr('email', 'emailErr'); if(email.value === "") allValid = false; }
+
+        
+        if (pass.value.length > 0 && pass.value.length < 6) {
+            showErr('pass', 'passErr'); allValid = false;
+        } else { hideErr('pass', 'passErr'); if(pass.value === "") allValid = false; }
+
+        
+        if (cPass.value.length > 0 && cPass.value !== pass.value) {
+            showErr('cPass', 'cPassErr'); allValid = false;
+        } else { hideErr('cPass', 'cPassErr'); if(cPass.value === "") allValid = false; }
+
+        
+        btn.disabled = !allValid;
+    }
+
+    
+    inputs.forEach(input => {
+        input.addEventListener('input', validateLive);
+    });
+
+
+    function showErr(inputId, errId) {
+        document.getElementById(inputId).classList.add('is-invalid');
+        document.getElementById(errId).style.display = 'block';
+    }
+    function hideErr(inputId, errId) {
+        document.getElementById(inputId).classList.remove('is-invalid');
+        document.getElementById(errId).style.display = 'none';
+    }
+
+
+    function toggleView(id, el) {
+        const input = document.getElementById(id);
+        if (input.type === "password") {
+            input.type = "text";
+            el.classList.replace("bi-eye", "bi-eye-slash");
+        } else {
+            input.type = "password";
+            el.classList.replace("bi-eye-slash", "bi-eye");
+        }
+    }
+
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Good job!',
+            text: 'Well done, submit successfully!',
+            icon: 'success',
+            confirmButtonColor: '#2c5364'
+        });
+        this.reset();
+        validateLive();
+    });
+</script>
+
+</body>
+</html>
